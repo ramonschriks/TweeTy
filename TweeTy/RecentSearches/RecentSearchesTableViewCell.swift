@@ -9,7 +9,6 @@
 import UIKit
 
 class RecentSearchesTableViewCell: UITableViewCell {
-    @IBOutlet weak var date: UILabel!
     @IBOutlet weak var searchText: UILabel!
-    @IBOutlet weak var resultCount: UILabel!
+    @IBOutlet weak var date: UILabel!
 }

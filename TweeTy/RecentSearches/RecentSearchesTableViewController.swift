@@ -21,21 +21,16 @@ class RecentSearchesTableViewController: CoreDataTableViewController, UISearchBa
     }
     
     // MARK: View Controller Lifecycle
-    
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        tableView.estimatedRowHeight = tableView.rowHeight
-        tableView.rowHeight = UITableViewAutomaticDimension
-    }
-    
     override func viewDidAppear(_ animated: Bool) {
         loadRecentSearches()
+        tableView.estimatedRowHeight = tableView.rowHeight
+        tableView.rowHeight = UITableViewAutomaticDimension
     }
     
     private func loadRecentSearches() {
         if let context = managedObjectContext {
             let request = NSFetchRequest<RecentSearch>(entityName: "RecentSearch")
-            request.sortDescriptors = [NSSortDescriptor(key: "searchText", ascending: true)]
+            request.sortDescriptors = [NSSortDescriptor(key: "date", ascending: false)]
             fetchedResultsController = NSFetchedResultsController(
                 fetchRequest: request,
                 managedObjectContext: context,
@@ -54,13 +49,27 @@ class RecentSearchesTableViewController: CoreDataTableViewController, UISearchBa
             if let recentSearch = fetchedResultsController?.object(at: indexPath) as? RecentSearch {
                 
                 recentSearch.managedObjectContext?.performAndWait {
-                    recentsCell.date?.text = String(describing: recentSearch.date)
-                    recentsCell.resultCount?.text = String(recentSearch.resultCount)
+                    recentsCell.date?.text = formatDate(with: recentSearch.date!)
                     recentsCell.searchText?.text = recentSearch.searchText
                 }
             }
         }
         return cell
+    }
+    
+    override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
+        if editingStyle == .delete {
+            
+            if let recentSearch = fetchedResultsController?.object(at: indexPath) as? RecentSearch {
+                managedObjectContext?.delete(recentSearch)
+
+                do {
+                    try self.managedObjectContext?.save()
+                } catch let error {
+                    print("Core Data Error: \(error)")
+                }
+            }
+        }
     }
     
     override func shouldPerformSegue(withIdentifier identifier: String, sender: Any?) -> Bool {
@@ -73,12 +82,18 @@ class RecentSearchesTableViewController: CoreDataTableViewController, UISearchBa
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "search" {
             let tweetySearchText = tweetySearchBar.text
-            print(segue.destination.contents)
             if let tweetsVC = segue.destination.contents as? TweetResultsTableViewController {
                 tweetsVC.managedObjectContext = self.managedObjectContext
                 tweetsVC.searchText = tweetySearchText
             }
+            tweetySearchBar.text = ""
         }
+    }
+    
+    private func formatDate(with date: Date) -> String {
+       let formatter = DateFormatter()
+        formatter.dateFormat = "E, d MMM yyyy HH:mm:ss"
+        return formatter.string(from: date)
     }
 }
 

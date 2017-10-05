@@ -10,7 +10,7 @@ import UIKit
 import CoreData
 
 class RecentSearch: NSManagedObject {
-    
+        
     class func addRecentSearch(with searchRequest: O_RecentSearch, inManagedObjectContext context: NSManagedObjectContext) -> RecentSearch? {
         let request = NSFetchRequest<NSFetchRequestResult>(entityName: "RecentSearch")
         request.predicate = NSPredicate(format: "searchText = %@", searchRequest.searchText)
