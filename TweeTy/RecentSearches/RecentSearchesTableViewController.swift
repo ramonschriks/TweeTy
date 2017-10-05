@@ -73,19 +73,25 @@ class RecentSearchesTableViewController: CoreDataTableViewController, UISearchBa
     }
     
     override func shouldPerformSegue(withIdentifier identifier: String, sender: Any?) -> Bool {
-        if (tweetySearchBar.text?.isEmpty)! {
+        if identifier == "search", (tweetySearchBar.text?.isEmpty)! {
             return false
         }
         return true
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        if segue.identifier == "search" {
-            let tweetySearchText = tweetySearchBar.text
-            if let tweetsVC = segue.destination.contents as? TweetResultsTableViewController {
-                tweetsVC.managedObjectContext = self.managedObjectContext
-                tweetsVC.searchText = tweetySearchText
+        if let tweetsVC = segue.destination.contents as? TweetResultsTableViewController {
+            switch segue.identifier {
+            case .some("recent"):
+                if let cell = sender as? RecentSearchesTableViewCell {
+                    tweetsVC.searchText = cell.searchText.text
+                }
+            case .some("search"):
+                tweetsVC.searchText = tweetySearchBar.text
+            default:
+                tweetsVC.searchText = ""
             }
+            tweetsVC.managedObjectContext = self.managedObjectContext
             tweetySearchBar.text = ""
         }
     }

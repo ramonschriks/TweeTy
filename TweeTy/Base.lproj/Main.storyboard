@@ -63,6 +63,7 @@
                                 <connections>
                                     <outlet property="date" destination="dqS-Kc-gWW" id="7dL-gB-R5k"/>
                                     <outlet property="searchText" destination="Ba1-D6-4FG" id="Iod-BH-ta7"/>
+                                    <segue destination="huD-Ou-aar" kind="show" identifier="recent" id="S2z-iN-U7w"/>
                                 </connections>
                             </tableViewCell>
                         </prototypes>
@@ -134,4 +135,7 @@
             <point key="canvasLocation" x="726" y="-12"/>
         </scene>
     </scenes>
+    <inferredMetricsTieBreakers>
+        <segue reference="S2z-iN-U7w"/>
+    </inferredMetricsTieBreakers>
 </document>
