@@ -10,16 +10,17 @@ import UIKit
 import CoreData
 
 class RecentSearch: NSManagedObject {
+    static let entityName = "RecentSearch"
         
     class func addRecentSearch(with searchRequest: O_RecentSearch, inManagedObjectContext context: NSManagedObjectContext) -> RecentSearch? {
-        let request = NSFetchRequest<NSFetchRequestResult>(entityName: "RecentSearch")
+        let request = NSFetchRequest<NSFetchRequestResult>(entityName: self.entityName)
         request.predicate = NSPredicate(format: "searchText = %@", searchRequest.searchText)
         
         if let recentSearch = (try? context.fetch(request))?.first as? RecentSearch {
             recentSearch.date = Date()
             recentSearch.resultCount = searchRequest.resultCount
             return recentSearch
-        } else if let recentSearch = NSEntityDescription.insertNewObject(forEntityName: "RecentSearch", into: context) as? RecentSearch {
+        } else if let recentSearch = NSEntityDescription.insertNewObject(forEntityName: self.entityName, into: context) as? RecentSearch {
             recentSearch.searchText = searchRequest.searchText
             recentSearch.resultCount = searchRequest.resultCount
             recentSearch.date = searchRequest.date

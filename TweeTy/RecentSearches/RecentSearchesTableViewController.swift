@@ -29,7 +29,7 @@ class RecentSearchesTableViewController: CoreDataTableViewController, UISearchBa
     
     private func loadRecentSearches() {
         if let context = managedObjectContext {
-            let request = NSFetchRequest<RecentSearch>(entityName: "RecentSearch")
+            let request = NSFetchRequest<RecentSearch>(entityName: RecentSearch.entityName)
             request.sortDescriptors = [NSSortDescriptor(key: "date", ascending: false)]
             fetchedResultsController = NSFetchedResultsController(
                 fetchRequest: request,

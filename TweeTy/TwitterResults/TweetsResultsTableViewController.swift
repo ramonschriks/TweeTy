@@ -8,23 +8,34 @@
 
 import UIKit
 import CoreData
+import TwitterKit
 
-class TweetResultsTableViewController: CoreDataTableViewController {
+class TweetResultsTableViewController: TWTRTimelineViewController {
     var searchText: String? { didSet{ updateUI() } }
     var managedObjectContext: NSManagedObjectContext? =
         (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
-    
+    var searchRequest: TwitterSearchRequest?
+
     private func updateUI() {
         self.title = searchText
-        saveRecentSearch()
+        if !(searchText?.isEmpty)! {
+            saveRecentSearch()
+            loadTimeline()
+        }
     }
     
+    private func loadTimeline() {
+        if searchText != nil, let datasource = TwitterSearchRequest.doRequest(with: searchText!) {
+            self.dataSource = datasource
+        }
+    }
+
     private func saveRecentSearch() {
         managedObjectContext?.perform {
             let recentSearch = O_RecentSearch(
                 searchText: self.searchText!,
                 date: Date(),
-                resultCount: 1
+                resultCount: 1 // Not used atm
             )
             _ = RecentSearch.addRecentSearch(with: recentSearch, inManagedObjectContext: self.managedObjectContext!)
             
@@ -34,15 +45,15 @@ class TweetResultsTableViewController: CoreDataTableViewController {
                 print("Core Data Error: \(error)")
             }
         }
-        printDatabaseStatistics()
     }
     
-    private func printDatabaseStatistics() {
-        managedObjectContext?.perform {
-            if let results = try? self.managedObjectContext!.fetch(NSFetchRequest(entityName: "RecentSearch")) {
-                print("\(results.count) Recents")
-            }
+    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: "tweet", for: indexPath)
+        
+        let tweet = self.tweet(at: indexPath.row)
+        if let tweetCell = cell as? TweetResultsTableViewCell {
+            tweetCell.tweet = tweet
         }
+        return cell
     }
 }
-

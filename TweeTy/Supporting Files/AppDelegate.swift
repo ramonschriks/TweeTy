@@ -8,18 +8,20 @@
 
 import UIKit
 import CoreData
+import TwitterKit
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
     var window: UIWindow?
 
-
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
         UINavigationBar.appearance().barTintColor = UIColor(red: 41/255, green: 128/255, blue: 185/255, alpha: 1.0)
         UINavigationBar.appearance().tintColor = UIColor.white
         UINavigationBar.appearance().titleTextAttributes = [NSAttributedStringKey.foregroundColor:UIColor.white]
+        
+        Twitter.sharedInstance().start(withConsumerKey:"zA8ZdAMgckRu7pNbluJ845cZu", consumerSecret:"XkKSsfCX0daO0OCaJNXJqPlEged5zGJ7TmYWloZAHKTMJIUzHp")
 
         return true
     }
