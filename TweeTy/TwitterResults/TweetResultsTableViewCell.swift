@@ -15,8 +15,8 @@ class TweetResultsTableViewCell: UITableViewCell {
     @IBOutlet weak var tweetUserLabel: UILabel!
     @IBOutlet weak var tweetTextLabel: UILabel!
     
-    var tweet: TWTRTweet? { didSet { loadUI() } }
-    
+    var tweet: Tweet? { didSet { loadUI() } }
+
     private func loadUI() {
         // reset any existing tweet information
         tweetTextLabel?.attributedText = nil
@@ -25,27 +25,22 @@ class TweetResultsTableViewCell: UITableViewCell {
         tweetDateLabel?.text = nil
         
         if let tweet = self.tweet {
-            tweetTextLabel?.text = tweet.text
-            tweetUserLabel?.text = "@\(tweet.author.screenName)"
-           
-            loadImage(with: tweet.author.profileImageURL)
-            loadDate(date: tweet.createdAt)
+            tweetUserLabel?.text = "@\(tweet.sourceTweet.author.screenName)"
+            tweetImage?.image = tweet.profileImage
+            loadDate(date: tweet.sourceTweet.createdAt)
+            
+        
+            let range = (tweet.sourceTweet.text.lowercased() as NSString).range(of: tweet.searchText.lowercased())
+            let attributedString = NSMutableAttributedString(string: tweet.sourceTweet.text)
+            attributedString.addAttribute(NSAttributedStringKey.foregroundColor, value: UIColor.blue, range: range)
+            tweetTextLabel?.attributedText = attributedString
         }
     }
+    
     private func loadDate(date: Date) {
         let formatter = DateFormatter()
         formatter.dateStyle = DateFormatter.Style.short
         formatter.timeStyle = DateFormatter.Style.short
         tweetDateLabel?.text = formatter.string(from: date)
-    }
-    
-    private func loadImage(with stringURL: String) {
-        if let url = URL(string: stringURL) {
-            DispatchQueue.main.async() { [weak self] in
-                if let imageData = NSData.init(contentsOf: url) {
-                    self?.tweetImage?.image = UIImage(data: imageData as Data)
-                }
-            }
-        }
     }
 }

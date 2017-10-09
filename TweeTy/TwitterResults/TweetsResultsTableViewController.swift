@@ -50,9 +50,11 @@ class TweetResultsTableViewController: TWTRTimelineViewController {
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "tweet", for: indexPath)
         
-        let tweet = self.tweet(at: indexPath.row)
+        let sourceTweet = self.tweet(at: indexPath.row)
         if let tweetCell = cell as? TweetResultsTableViewCell {
-            tweetCell.tweet = tweet
+            Tweet.parseTweet(withSourceTweet: sourceTweet, searchText: self.searchText!) { tweet in
+                tweetCell.tweet = tweet
+            }
         }
         return cell
     }
