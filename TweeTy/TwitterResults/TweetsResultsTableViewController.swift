@@ -10,12 +10,25 @@ import UIKit
 import CoreData
 import TwitterKit
 
-class TweetResultsTableViewController: TWTRTimelineViewController {
+class TweetResultsTableViewController: UITableViewController {
     var searchText: String? { didSet{ updateUI() } }
     var managedObjectContext: NSManagedObjectContext? =
         (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
-    var searchRequest: TwitterSearchRequest?
+    
 
+    private var lastTwitterRequest: TwitterRequest?
+    private var twitterRequest: TwitterRequest? {
+        if lastTwitterRequest == nil {
+            if self.searchText != nil {
+                return TwitterRequest()
+            }
+        }
+        return lastTwitterRequest
+    }
+    
+    private var tweets: [Tweet]? {
+        didSet { tableView.reloadData()}}
+    
     private func updateUI() {
         self.title = searchText
         if !(searchText?.isEmpty)! {
@@ -25,8 +38,21 @@ class TweetResultsTableViewController: TWTRTimelineViewController {
     }
     
     private func loadTimeline() {
-        if searchText != nil, let datasource = TwitterSearchRequest.doRequest(with: searchText!) {
-            self.dataSource = datasource
+        if let request = twitterRequest {
+            lastTwitterRequest = request
+            request.getTweets(withQuery: searchText!) { [weak weakSelf = self ] tweets in
+                DispatchQueue.global(qos: .background).async {
+                    var parsed: [Tweet] = []
+                    for tweet in tweets {
+                        tweet.parseTweet() { parsedTweet in     // Parse tweets on background
+                            parsed.append(parsedTweet)
+                        }
+                    }
+                    DispatchQueue.main.async {                  // Set the tweets back on the main queue
+                        weakSelf?.tweets = parsed
+                    }
+                }
+            }
         }
     }
 
@@ -47,13 +73,19 @@ class TweetResultsTableViewController: TWTRTimelineViewController {
         }
     }
     
+    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        if let tweets = self.tweets {
+            return tweets.count
+        }
+        return 0
+    }
+    
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "tweet", for: indexPath)
         
-        let sourceTweet = self.tweet(at: indexPath.row)
-        if let tweetCell = cell as? TweetResultsTableViewCell {
-            Tweet.parseTweet(withSourceTweet: sourceTweet, searchText: self.searchText!) { tweet in
-                tweetCell.tweet = tweet
+        if let sourceTweet = self.tweets?[indexPath.row] {
+            if let tweetCell = cell as? TweetResultsTableViewCell {
+                tweetCell.tweet = sourceTweet
             }
         }
         return cell

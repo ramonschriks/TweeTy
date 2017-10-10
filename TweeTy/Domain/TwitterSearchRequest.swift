@@ -12,12 +12,13 @@ import TwitterKit
 struct TwitterSearchRequest {
 
     static func doRequest(with searchText: String) -> TWTRTimelineDataSource? {
-        
+        return TWTRSearchTimelineDataSource(searchQuery: "“\(searchText)”", apiClient: TWTRAPIClient())
+
         switch searchText.characters.first {
         case .some("#"):
             return self.searchBy(hashtag: searchText)
         case .some("@"):
-            return self.searchBy(user: searchText)
+            return self.searchBy(hashtag: searchText)
         default:
             if isUrl(query: searchText) {
                 return self.searchBy(url: searchText)
@@ -35,7 +36,7 @@ struct TwitterSearchRequest {
     }
     
     private static func searchBy(url: String) -> TWTRTimelineDataSource {
-        return TWTRSearchTimelineDataSource(searchQuery: url, apiClient: TWTRAPIClient())
+        return TWTRSearchTimelineDataSource(searchQuery: "“\(url)”", apiClient: TWTRAPIClient())
     }
     
     private static let URLS = ["http", "www",".com",".nl"]

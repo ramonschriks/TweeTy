@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		2A15CD95DE457D1D3BF6C260 /* Pods_TweeTy.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7A9CBD92DF6A7B2A99ECBDB4 /* Pods_TweeTy.framework */; };
 		5B2EDE061F89062D00F0752D /* TweetResultsTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B2EDE051F89062D00F0752D /* TweetResultsTableViewCell.swift */; };
+		5B342CC31F8CBEA300CA1D84 /* TwitterRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B342CC21F8CBEA300CA1D84 /* TwitterRequest.swift */; };
 		5B62E7381F855DFC00E35983 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B62E7371F855DFC00E35983 /* AppDelegate.swift */; };
 		5B62E73D1F855DFC00E35983 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 5B62E73B1F855DFC00E35983 /* Main.storyboard */; };
 		5B62E7401F855DFC00E35983 /* TweeTy.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 5B62E73E1F855DFC00E35983 /* TweeTy.xcdatamodeld */; };
@@ -21,13 +22,13 @@
 		5B6FB4041F85AB1300F6B909 /* TweetsResultsTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B6FB4031F85AB1300F6B909 /* TweetsResultsTableViewController.swift */; };
 		5B8F2E261F8BE96B0094E91F /* Tweet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B8F2E251F8BE96B0094E91F /* Tweet.swift */; };
 		5BA8C4FF1F859A1B00689A25 /* O_RecentSearch.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5BA8C4FE1F859A1B00689A25 /* O_RecentSearch.swift */; };
-		5BE99DDD1F86591600C1BF41 /* TwitterSearchRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5BE99DDC1F86591600C1BF41 /* TwitterSearchRequest.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		0A2FC7EEB229D7AE3C0D9573 /* Pods-TweeTy.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TweeTy.debug.xcconfig"; path = "Pods/Target Support Files/Pods-TweeTy/Pods-TweeTy.debug.xcconfig"; sourceTree = "<group>"; };
 		4A6430D23CA0DDBEFAF41121 /* Pods-TweeTy.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TweeTy.release.xcconfig"; path = "Pods/Target Support Files/Pods-TweeTy/Pods-TweeTy.release.xcconfig"; sourceTree = "<group>"; };
 		5B2EDE051F89062D00F0752D /* TweetResultsTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TweetResultsTableViewCell.swift; sourceTree = "<group>"; };
+		5B342CC21F8CBEA300CA1D84 /* TwitterRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TwitterRequest.swift; sourceTree = "<group>"; };
 		5B62E7341F855DFC00E35983 /* TweeTy.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TweeTy.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		5B62E7371F855DFC00E35983 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		5B62E73C1F855DFC00E35983 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
@@ -42,7 +43,6 @@
 		5B6FB4031F85AB1300F6B909 /* TweetsResultsTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TweetsResultsTableViewController.swift; sourceTree = "<group>"; };
 		5B8F2E251F8BE96B0094E91F /* Tweet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Tweet.swift; sourceTree = "<group>"; };
 		5BA8C4FE1F859A1B00689A25 /* O_RecentSearch.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = O_RecentSearch.swift; sourceTree = "<group>"; };
-		5BE99DDC1F86591600C1BF41 /* TwitterSearchRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TwitterSearchRequest.swift; sourceTree = "<group>"; };
 		7A9CBD92DF6A7B2A99ECBDB4 /* Pods_TweeTy.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_TweeTy.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -131,7 +131,6 @@
 		5BA8C5001F859A3300689A25 /* Domain */ = {
 			isa = PBXGroup;
 			children = (
-				5BE99DDC1F86591600C1BF41 /* TwitterSearchRequest.swift */,
 				5BA8C4FE1F859A1B00689A25 /* O_RecentSearch.swift */,
 				5B8F2E251F8BE96B0094E91F /* Tweet.swift */,
 			);
@@ -143,6 +142,7 @@
 			children = (
 				5B6FB4031F85AB1300F6B909 /* TweetsResultsTableViewController.swift */,
 				5B2EDE051F89062D00F0752D /* TweetResultsTableViewCell.swift */,
+				5B342CC21F8CBEA300CA1D84 /* TwitterRequest.swift */,
 			);
 			path = TwitterResults;
 			sourceTree = "<group>";
@@ -251,9 +251,12 @@
 			files = (
 			);
 			inputPaths = (
+				"${SRCROOT}/Pods/Target Support Files/Pods-TweeTy/Pods-TweeTy-frameworks.sh",
+				"${BUILT_PRODUCTS_DIR}/SwiftyJSON/SwiftyJSON.framework",
 			);
 			name = "[CP] Embed Pods Frameworks";
 			outputPaths = (
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SwiftyJSON.framework",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -285,7 +288,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				5BE99DDD1F86591600C1BF41 /* TwitterSearchRequest.swift in Sources */,
 				5B62E7511F85645B00E35983 /* RecentSearchesTableViewController.swift in Sources */,
 				5B62E7381F855DFC00E35983 /* AppDelegate.swift in Sources */,
 				5B62E7551F8573F600E35983 /* RecentSearchesTableViewCell.swift in Sources */,
@@ -294,6 +296,7 @@
 				5B2EDE061F89062D00F0752D /* TweetResultsTableViewCell.swift in Sources */,
 				5B62E7531F85647400E35983 /* CoreDataTableViewController.swift in Sources */,
 				5B6FB4041F85AB1300F6B909 /* TweetsResultsTableViewController.swift in Sources */,
+				5B342CC31F8CBEA300CA1D84 /* TwitterRequest.swift in Sources */,
 				5B8F2E261F8BE96B0094E91F /* Tweet.swift in Sources */,
 				5B62E74F1F85637400E35983 /* RecentSearch.swift in Sources */,
 			);

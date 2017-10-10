@@ -23,24 +23,38 @@ class TweetResultsTableViewCell: UITableViewCell {
         tweetUserLabel?.text = nil
         tweetImage?.image = nil
         tweetDateLabel?.text = nil
-        
-        if let tweet = self.tweet {
-            tweetUserLabel?.text = "@\(tweet.sourceTweet.author.screenName)"
-            tweetImage?.image = tweet.profileImage
-            loadDate(date: tweet.sourceTweet.createdAt)
+
+        if let tweet = self.tweet { // Force unwrap because we know at this point the values are parsed
             
-        
-            let range = (tweet.sourceTweet.text.lowercased() as NSString).range(of: tweet.searchText.lowercased())
-            let attributedString = NSMutableAttributedString(string: tweet.sourceTweet.text)
-            attributedString.addAttribute(NSAttributedStringKey.foregroundColor, value: UIColor.blue, range: range)
-            tweetTextLabel?.attributedText = attributedString
+            if let screenName = tweet.authorName {
+                tweetUserLabel?.text = "@\(screenName)"
+            }
+            
+            if let profileImage = tweet.profileImage {
+                tweetImage?.image = profileImage
+            }
+
+            if let created = tweet.created {
+                loadDate(date: created)
+            }
+
+            if let text = tweet.text {
+                let range = (text.lowercased() as NSString).range(of: tweet.searchText.lowercased())
+                let attributedString = NSMutableAttributedString(string: text)
+                attributedString.addAttribute(NSAttributedStringKey.foregroundColor, value: UIColor.blue, range: range)
+                tweetTextLabel?.attributedText = attributedString
+            }
         }
     }
     
-    private func loadDate(date: Date) {
+    private func loadDate(date: String) {
         let formatter = DateFormatter()
-        formatter.dateStyle = DateFormatter.Style.short
-        formatter.timeStyle = DateFormatter.Style.short
-        tweetDateLabel?.text = formatter.string(from: date)
+        formatter.dateFormat = "EEE MMM dd HH:mm:ss Z yyyy"
+        
+        if let date = formatter.date(from: date) {
+            formatter.dateStyle = DateFormatter.Style.short
+            formatter.timeStyle = DateFormatter.Style.short
+            tweetDateLabel?.text = formatter.string(from: date)
+        }
     }
 }

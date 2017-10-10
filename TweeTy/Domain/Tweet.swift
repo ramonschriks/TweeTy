@@ -8,38 +8,60 @@
 
 import Foundation
 import TwitterKit
+import TwitterCore
+import SwiftyJSON
 
 class Tweet {
-    let sourceTweet: TWTRTweet
+    let sourceTweet: JSON
     let searchText: String
     
+    var authorName: String?
+    var created: String?
+    var text: String?
     var profileImage: UIImage?
     var images: [UIImage]?
     var hashtags: [String]?
     var urls: [URL]?
     var users: [String]?
     
-    private init(_ sourceTweet: TWTRTweet, _ searchText: String) {
+    init(sourceTweet: JSON, searchText: String) {
         self.sourceTweet = sourceTweet
         self.searchText = searchText
     }
     
-    public static func parseTweet(withSourceTweet: TWTRTweet, searchText: String, completionHandler:@escaping (Tweet) -> ()) {
-        let tweet = Tweet(withSourceTweet, searchText)
-        let mentions = tweet.sourceTweet.text.components(separatedBy: " ")
-        tweet.parseProfileImage(with: tweet.sourceTweet.author.profileImageURL)
-       
-        DispatchQueue.main.async {
-            //tweet.parseImages(with: mentions)
-            tweet.parseHashtags(with: mentions)
-            tweet.parseUsers(with: mentions)
-            tweet.parseUrls(with: mentions)
+    public func parseTweet(completionHandler:@escaping (Tweet) -> ()) {
+        self.parseProfileImage()
+        if let screenName = self.sourceTweet["user"]["screen_name"].string {
+            self.authorName = screenName
         }
-        completionHandler(tweet)
+        if let created = self.sourceTweet["created_at"].string {
+            self.created = created
+        }
+        if let text = self.sourceTweet["full_text"].string {
+            self.text = text
+        }
+        
+        print(self.sourceTweet)
+        
+//        --PARSE THE OTHER DATA--
+//        tweet.parseImages(with: mentions)
+//        tweet.parseHashtags(with: mentions)
+//        tweet.parseUsers(with: mentions)
+//        tweet.parseUrls(with: mentions)
+        
+        completionHandler(self)
+        
     }
     
-    private func parseProfileImage(with profileImageUrl: String) {
-        self.loadImage(withStringUrl: profileImageUrl) { [weak self] image in
+    private func parseProfileImage() {
+        var imageUrl: String = ""
+        if let url = self.sourceTweet["user"]["profile_image_url_https"].string {
+            imageUrl = url
+        } else if let url = self.sourceTweet["user"]["profile_image_url"].string {
+            imageUrl = url
+        }
+        
+        self.loadImage(withStringUrl: imageUrl) { [weak self] image in
             self?.profileImage = image
         }
     }
@@ -63,18 +85,15 @@ class Tweet {
         }
         self.users = users
     }
-    
-    private func parseImages(with mentions: [String]) {
-        var images: [UIImage] = []
-        for mention in mentions {
-            if mention.contains("https://t.co") {
-                loadImage(withStringUrl: mention) { image in
-                    images.append(image)
-                }
-            }
-        }
-        self.images = images
-    }
+
+//    private func parseImages(with mentions: [String]) {
+//        var images: [UIImage] = []
+//        if let mediaEntities = self.sourceTweet.value(forKey: "media") as? NSArray {
+//            for mediaEntity in mediaEntities{
+//                print(mediaEntity)
+//            }
+//        }
+//    }
 
     private func parseUrls(with mentions: [String]) {
         var urls: [URL] = []
