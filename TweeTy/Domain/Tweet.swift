@@ -15,13 +15,16 @@ class Tweet {
     let sourceTweet: JSON
     let searchText: String
     
+    // Attributes
     var authorName: String?
     var created: String?
     var text: String?
     var profileImage: UIImage?
+    
+    // Mentions
     var images: [UIImage]?
     var hashtags: [String]?
-    var urls: [URL]?
+    var urls: [String]?
     var users: [String]?
     
     init(sourceTweet: JSON, searchText: String) {
@@ -41,16 +44,14 @@ class Tweet {
             self.text = text
         }
         
-        print(self.sourceTweet)
-        
-//        --PARSE THE OTHER DATA--
-//        tweet.parseImages(with: mentions)
-//        tweet.parseHashtags(with: mentions)
-//        tweet.parseUsers(with: mentions)
-//        tweet.parseUrls(with: mentions)
-        
+        // Parse the rest of the data async
+        DispatchQueue.global().async {
+            self.parseHashtags()
+            self.parseUsers()
+            self.parseUrls()
+            self.parseImages()
+        }
         completionHandler(self)
-        
     }
     
     private func parseProfileImage() {
@@ -66,43 +67,50 @@ class Tweet {
         }
     }
     
-    private func parseHashtags(with mentions: [String]) {
-        var hashtags: [String] = []
-        for mention in mentions {
-            if mention.characters.first == "#" {
-                hashtags.append(mention)
+    private func parseHashtags() {
+        if let hashtags = self.sourceTweet["entities"]["hashtags"].array {
+            self.hashtags = []
+            for hashtag in hashtags {
+                if let hashtagText = hashtag["text"].string {
+                    self.hashtags?.append(hashtagText)
+                }
             }
         }
-        self.hashtags = hashtags
     }
     
-    private func parseUsers(with mentions: [String]) {
-        var users: [String] = []
-        for mention in mentions {
-            if mention.characters.first == "@" {
-                users.append(mention)
+    private func parseUsers() {
+        if let users = self.sourceTweet["entities"]["user_mentions"].array {
+            self.users = []
+            for user in users {
+                if let userScreenName = user["screen_name"].string {
+                    self.users?.append(userScreenName)
+                }
             }
         }
-        self.users = users
+    }
+    
+    private func parseUrls() {
+        if let urls = self.sourceTweet["entities"]["urls"].array {
+            self.urls = []
+            for url in urls {
+                if let urlText = url["url"].string {
+                    self.urls?.append(urlText)
+                }
+            }
+        }
     }
 
-//    private func parseImages(with mentions: [String]) {
-//        var images: [UIImage] = []
-//        if let mediaEntities = self.sourceTweet.value(forKey: "media") as? NSArray {
-//            for mediaEntity in mediaEntities{
-//                print(mediaEntity)
-//            }
-//        }
-//    }
-
-    private func parseUrls(with mentions: [String]) {
-        var urls: [URL] = []
-        for mention in mentions {
-            if mention.contains("https://") || mention.contains("www"){
-                urls.append(URL(fileURLWithPath: mention))
+    private func parseImages() {
+        if let images = self.sourceTweet["entities"]["media"].array {
+            self.images = []
+            for image in images {
+                if let imageUrl = image["media_url_https"].string {
+                    self.loadImage(withStringUrl: imageUrl) { image in
+                        self.images?.append(image)
+                    }
+                }
             }
         }
-        self.urls = urls
     }
     
     private func loadImage(withStringUrl: String, completionHandler:@escaping (UIImage) -> ()) {

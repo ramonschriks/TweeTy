@@ -41,7 +41,7 @@ class TweetResultsTableViewController: UITableViewController {
         if let request = twitterRequest {
             lastTwitterRequest = request
             request.getTweets(withQuery: searchText!) { [weak weakSelf = self ] tweets in
-                DispatchQueue.global(qos: .background).async {
+                DispatchQueue.global(qos: .userInitiated).async {
                     var parsed: [Tweet] = []
                     for tweet in tweets {
                         tweet.parseTweet() { parsedTweet in     // Parse tweets on background
@@ -89,5 +89,13 @@ class TweetResultsTableViewController: UITableViewController {
             }
         }
         return cell
+    }
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if let tweetCell = sender as? TweetResultsTableViewCell {
+            if let tweetDetailVC = segue.destination.contents as? TweetDetailTableViewController {
+                tweetDetailVC.tweet = tweetCell.tweet
+            }
+        }
     }
 }
